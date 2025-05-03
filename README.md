@@ -1,10 +1,10 @@
 [##<ins> **Non-native-conformation-generation-by-threading**</ins>](https://github.com/ABLab2018/Fortran-codes/tree/main/non-native-conformation-generation)
 
-Required parameter: Total number of proteins considered("n"), chain length of the target protein ("ntar") \
+Required parameter: Total number of proteins considered("n"), chain length of the target protein ("ntar") 
 
-Required inputs: PDB IDs of the proteins considered for non-native conformation generation, C-alpha coordinates of proteins \
+Required inputs: PDB IDs of the proteins considered for non-native conformation generation, C-alpha coordinates of proteins 
 
-Compile the code with a fortran compiler: [f95 threading-conf-gen.f]([url](https://github.com/ABLab2018/Fortran-codes/blob/main/non-native-conformation-generation/threading-conf-gen.f)) \
+Compile the code with a fortran compiler: [f95 threading-conf-gen.f](https://github.com/ABLab2018/Fortran-codes/blob/main/non-native-conformation-generation/threading-conf-gen.f) 
 
 execute the file (./a.out)\
 
