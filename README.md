@@ -1,11 +1,11 @@
-<ins> **Non-native-conformation-generation-by-threading**</ins>
+##<ins> **Non-native-conformation-generation-by-threading**</ins>
 
-Required parameter: Total number of proteins considered("n"), chain length of the target protein ("ntar") \\
-Required inputs: PDB IDs of the proteins considered for non-native conformation generation, C-alpha coordinates of proteins
-Compile the code with a fortran compiler: f95 threading-conf-gen.f
-execute the file (./a.out)
+Required parameter: Total number of proteins considered("n"), chain length of the target protein ("ntar") \
+Required inputs: PDB IDs of the proteins considered for non-native conformation generation, C-alpha coordinates of proteins \
+Compile the code with a fortran compiler: f95 threading-conf-gen.f\
+execute the file (./a.out)\
 
-<ins> **One-body-potential**</ins>
+##<ins> **One-body-potential**</ins>
 **Step 1:**
 Required parameter: Total number of proteins considered("np"), Total number of nearest neighbors to be considered ("nf")
 Required inputs: PDB IDs of the proteins considered for potential generation, a file containing names of nearest neighbors (say for amino acid ALA,ALA-nn01....ALA-nn10), C-alpha coordinates of proteins
