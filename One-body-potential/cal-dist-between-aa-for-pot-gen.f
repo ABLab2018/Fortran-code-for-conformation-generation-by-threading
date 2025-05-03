@@ -20,7 +20,7 @@ c	write(*,*) filename(i)
 	enddo
 
 	do i=1,np
-	open(3,file="coord-CA-615-pro/"//pdb(i))
+	open(3,file="coord-CA-500-pro/"//pdb(i))
 	
 	do j=1,nl
 	rescount=j
