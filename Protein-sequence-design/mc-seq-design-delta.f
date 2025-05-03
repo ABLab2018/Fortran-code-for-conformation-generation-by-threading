@@ -1,13 +1,13 @@
-	parameter(mcseq=500,mcstep=5000,npro=19537,nupro=19536)
+	parameter(mcseq=10,mcstep=30000,npro=19537,nupro=19536)
 	parameter(nsite=50,na=20,nf=10,nbin=200,np=315566,np1=1145226)
 	parameter(np2=1014468,np3=788236,np4=1694974,np5=2084332)
 	parameter(np6=2409134,np7=1982944,np8=2273016)
 	parameter(np9=2301764,np10=2351126)
 	
-	real cc,cc1,cc2,eold(npro,nsite),eold1,transp,random,kT
-	double precision eunnew,eun
+	real cc,cc1,cc2,eold(npro),eold1,transp,random,kT
+	double precision eunnew,eun,simold,simnew,simold1,eold11(1)
 	integer seq,ssite,site,aseq(nsite),aseqn(nsite),arand
-	real oneold,oneold1,oneold2(npro,nsite),en,en1,enew2,eold2
+	real oneold,oneold1,oneold2(npro,nsite),enew2,eold2
 	real onenew,onenew1,onenew2(npro,nsite),eavunnew
 	real told,told1,told2(npro,nsite),eavun,delold,delold1
 	real told3,told11,told22(npro,nsite)
@@ -19,7 +19,7 @@
 	real told9,told91,told92(npro,nsite),told10,told101
 	real told13,told131,told132(npro,nsite)
 	real told12,told121,told122(npro,nsite)
-	real delnew,enew(npro,nsite)
+	real delnew,enew(npro),ss11,ss22
 	real tnew4,tnew31,tnew32(npro,nsite),told102(npro,nsite)
 	real tnew5,tnew51,tnew52(npro,nsite)
 	real tnew6,tnew61,tnew62(npro,nsite)
@@ -31,10 +31,10 @@
 	real tnew12,tnew121,tnew122(npro,nsite)
 	real tnew,tnew1,tnew2(npro,nsite)
 	real tnew3,tnew11,tnew22(npro,nsite)
-	integer bin_index(npro,nf,nsite),c(np),s1(np),s2(np)
+	integer bin_index(npro,nf,nsite),c(np),s1(np),s2(np),sim1,sim
 	integer c1(np),c2(np1),c3(np2),c4(np3),c5(np4),c6(np5),c7(np6)
 	integer c8(np7),c9(np8),c10(np9),c11(np10),ss1(np1),ss2(np1)
-	integer s3s1(np2),s3s2(np2)
+	integer s3s1(np2),s3s2(np2),wild(nsite),count1
 	integer s4s1(np3),s4s2(np3),s5s1(np4),s5s2(np4)
 	integer s6s1(np5),s6s2(np5),s7s1(np6),s7s2(np6)
 	integer s8s1(np7),s8s2(np7),s9s1(np8),s9s2(np8)
@@ -43,7 +43,7 @@
 	real tpot6(na,na),tpot7(na,na),tpot8(na,na),tpot9(na,na)
 	real tpot10(na,na),tpot11(na,na)
 	real onepot(na,nf,nbin),tpot(na,na),two,two1,one
-	character string1*12,string2*5
+	character string1*12,string3*12,string4*12,string2*5
 	
 	kT=0.04
 	
@@ -71,6 +71,7 @@
 	open(30,file="new-potential-file-CA-13-14-modified")
 	open(31,file="contact-profile-all-14-15")
 	open(32,file="new-potential-file-CA-14-15-modified")
+	open(33,file="6FM8-number.fasta")
 	
 	do i=1,npro
 	do j=1,nf
@@ -88,6 +89,11 @@ c*********read-one-body-potentials-nearest neighbour****************
 	read(2,*) onepot(i,j,k)
 	enddo
 	enddo
+	enddo
+c****************************read wildtype sequence*************
+
+	do i=1,nsite
+	read(33,*) wild(i)
 	enddo
 c***********************read-two-body-potential*************************
 	do i=1,na
@@ -142,7 +148,7 @@ c	write(*,*)c1(i),s1(i),s2(i)
 	enddo
 
 c*********************random sequence generation**************************
-	id=-2
+	id=-6
 	
 	do k=1,mcseq
 	
@@ -329,34 +335,50 @@ c	do j=1,nsite
 c	write(*,*) oneold2(1,j)
 c	enddo
 c**********************************add-old-energy******************************	
-	eold2=0
+	eold1=0
 	do i=1,npro
-	do j=1,nsite	
-	eold(i,j)= eold2+told2(i,j)+told22(i,j)+told32(i,j)
-     $  +told52(i,j)+told62(i,j)+told72(i,j)+told82(i,j)+told92(i,j)
-     $  +told102(i,j)+told132(i,j)+told122(i,j)+oneold2(i,j)
-	enddo
-	enddo
+	if (i .ne. i-1) then
+	eold1=0
+	endif
 	
-	en=0
 	do j=1,nsite
-	en=en+eold(1,j)
+	ss11= told2(i,j)+told22(i,j)+told32(i,j)+told52(i,j)
+     $  +told62(i,j)+told72(i,j)+told82(i,j)+told92(i,j)
+     $  +told102(i,j)+told132(i,j)+told122(i,j)+oneold2(i,j)
+     	
+     	eold(i)=eold1+ss11
+     	eold1=eold(i)
+     		
+	enddo
 	enddo
 	
 	eun=0
 	do i=2,npro
-	do j=1,nsite
-	eun=eun + eold(i,j)
-	enddo
+	eun=eun + eold(i)
 	enddo
 
 	eavun=eun/nupro
 	
-	delold= en-eavun
-c	write(*,*) en,eavun,eun,nupro,delold	
+	delold= eold(1)-eavun
+
+c**************check sequence similarity*********************
+	sim1=0
+	do i=1,nsite
+	if(aseq(i) .eq. wild(i))then
+	sim1=sim1+1
+	endif	
+	enddo
+	
+	simold=(sim1/nsite)*100
+
+c	write(*,*) eold(1),delold,simold
 c******************************random site selection************************
+	count1=0
 	do l=1,mcstep
-		
+c********count mc step*****************
+	count1=count1+1
+	write(*,*) count1
+c************************************
 	cc1=ran1(id)
 	site=int(cc1*nsite)+1
 	ssite=site
@@ -379,6 +401,8 @@ c	write (*,*) aseqn(i),aseq(i)
 c	enddo
 c*********************save old sequence energy*****************************
 	delold1=delold
+	eold11(1)=eold(1)
+	simold1=simold
 c	write(*,*) delold1,delold
 c*************************calculate energy of new sequence*****************
 c********two-body-pot*****Calpha-lt-5**************
@@ -549,7 +573,7 @@ c****************Calpha-13-14******two-body-pot*********
 c	do j=1,nsite
 c	write(*,*) tnew132(1,j)
 c	enddo
-c****************Calpha-14-15******two-body-pot*********
+c**************************Calpha-14-15******two-body-pot*******************
 	tnew12=0
 	do j=1,np10
 
@@ -589,30 +613,42 @@ c	enddo
 c**********************************add-new-energy******************************	
 	enew2=0
 	do i=1,npro
+	if (i .ne. i-1) then
+	enew2=0
+	endif
 	do j=1,nsite
-	enew(i,j)=enew2+tnew2(i,j)+tnew22(i,j)+tnew32(i,j)
-     $   +tnew52(i,j)+tnew62(i,j)+tnew72(i,j)+tnew82(i,j)+tnew92(i,j)
+	
+	ss22= tnew2(i,j)+tnew22(i,j)+tnew32(i,j)+tnew52(i,j)
+     $   +tnew62(i,j)+tnew72(i,j)+tnew82(i,j)+tnew92(i,j)
      $   +tnew102(i,j)+tnew132(i,j)+tnew122(i,j)+onenew2(i,j)
+     
+     	enew(i)=enew2+ss22
+     	enew2=enew(i)
+	
 	enddo
-	enddo
-
-	en1=0
-	do j=1,nsite
-	en1=en1+enew(1,j)
 	enddo
 	
 	eunnew=0
 	do i=2,npro
-	do j=1,nsite
-	eunnew=eunnew + enew(i,j)
-	enddo
+	eunnew=eunnew + enew(i)
 	enddo
 
 	eavunnew=eunnew/nupro
 	
-	delnew= en1-eavunnew
-
-c	write(*,*) en1,eavunnew,eunnew,nupro,delnew
+	delnew= enew(1)-eavunnew
+	
+c**************check sequence similarity*********************
+	sim2=0
+	do i=1,nsite
+	if(aseqn(i) .eq. wild(i))then
+	sim2=sim2+1
+	endif	
+	enddo
+	
+	simnew=(sim2/nsite)*100
+	
+c	write(*,*) sim2,nsite,simnew
+c	write(*,*) enew(1),delnew,simnew
 
 c********************condition of acceptance and rejection****************
 	if (delnew .lt. delold1) then
@@ -622,13 +658,22 @@ c********************condition of acceptance and rejection****************
 	enddo
 	
 	delold=delnew
+	eold(1)=enew(1)
+	simold=simnew
 	
-c	write(*,*) eold1,enew
+c	write(*,*) enew
 
 	write(string1,"(F12.4)") delnew
+	write(string3,"(F12.4)") enew(1)
+	write(string4,"(F12.4)") simnew
 	
-	open(10,file="del-mc-step-n2/"//"del-mc-step-"//string2)
+	open(10,file="del-mc-step-n6/"//"del-mc-step-"//string2)
+	open(11,file="Ef-mc-step-n6/"//"Ef-mc-step-"//string2)
+	open(12,file="sim-mc-step-n6/"//"sim-mc-step-"//string2)
+	
 	write(10,*) string1
+	write(11,*) string3
+	write(12,*) string4
 c	write(*,*) "accept"
 c	delold1,delnew
 		
@@ -645,12 +690,21 @@ c	write(*,*) delold1,delnew,random,transp,kT
 	enddo
 
 	delold=delnew
+	eold(1)=enew(1)
+	simold=simnew
 	
 c	write(*,*) delold1,delnew
 	write(string1,"(F12.4)") delnew
+	write(string3,"(F12.4)") enew(1)
+	write(string4,"(F12.4)") simnew
 	
-	open(10,file="del-mc-step-n2/"//"del-mc-step-"//string2)
+	open(10,file="del-mc-step-n6/"//"del-mc-step-"//string2)
+	open(11,file="Ef-mc-step-n6/"//"Ef-mc-step-"//string2)
+	open(12,file="sim-mc-step-n6/"//"sim-mc-step-"//string2)
+	
 	write(10,*) string1
+	write(11,*) string3
+	write(12,*) string4
 c	write(*,*) "accept"
 c	delold1,delnew
 
@@ -661,33 +715,38 @@ c	delold1,delnew
 	enddo
 
 	delnew=delold
+	enew(1)=eold(1)
+	simnew=simold
 	
 c	write(*,*) delold1,delnew
 	write(string1,"(F12.4)") delold
+	write(string3,"(F12.4)") eold(1)
+	write(string4,"(F12.4)") simold
 	
-	open(10,file="del-mc-step-n2/"//"del-mc-step-"//string2)
+	open(10,file="del-mc-step-n6/"//"del-mc-step-"//string2)
+	open(11,file="Ef-mc-step-n6/"//"Ef-mc-step-"//string2)
+	open(12,file="sim-mc-step-n6/"//"sim-mc-step-"//string2)
+	
 	write(10,*) string1
+	write(11,*) string3
+	write(12,*) string4
 c	write(*,*) "reject"
 	
 	endif
 	endif
 	
-	enddo
-
-	open(13, file="mc-seq-n2/"//"del-"//string1//"-"//string2)
+	
+	if (mod(count1,2500) .eq. 0) then
+	write(*,*) count1
+	open(13, file="mc-seq-n6/"//"del-"//string1//"-"//string2)
 
 	do i=1,nsite
 	write (13,*) aseqn(i)
 	enddo
+	endif
 	
-	open(14,file="mc-seq-n2/"//"res-en-"//string1//"-"//string2)
-	
-	do i=1,nsite
-	write(14,*) tnew2(1,i)+tnew22(1,i)+tnew32(1,i)+tnew52(1,i)
-     $   +tnew62(1,i)+tnew72(1,i)+tnew82(1,i)+tnew92(1,i)
-     $   +tnew102(1,i)+tnew132(1,i)+tnew122(1,i)+onenew2(1,i)
 	enddo
-	
+
 	enddo
 	
 	stop
