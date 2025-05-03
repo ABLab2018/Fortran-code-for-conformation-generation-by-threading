@@ -1,4 +1,4 @@
-`rgb(R,G,B)`##<ins> **Non-native-conformation-generation-by-threading**</ins>
+`rgb(R,G,B)`##<ins> **Non-native-conformation-generation-by-threading**</ins>`rgb(R,G,B)
 
 Required parameter: Total number of proteins considered("n"), chain length of the target protein ("ntar") \
 
